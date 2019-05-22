@@ -2,7 +2,6 @@
 ->Só pra frente e pors lados
 ->direto no esp8266
 ->ponte h só para voltagem
-
 */
 
 
@@ -20,6 +19,9 @@ int flag = 1;
 
 String command;             
 int speedCar =1;
+int speedStart = 900;
+int Stop = 0;
+int Time = 1000;
 
 const char* ssid = "CarHover";
 ESP8266WebServer server(80);
@@ -27,7 +29,7 @@ ESP8266WebServer server(80);
 void setup() {
  pinMode(VB, OUTPUT);
  pinMode(VA, OUTPUT);  
- 
+ analogWriteFreq(1000);
  Serial.begin(115200);
   
 // Connecting WiFi
@@ -47,36 +49,59 @@ void setup() {
 
 
 
-void goAhead(){   
-        
-      analogWrite(VA, speedCar);
-      analogWrite(VB, speedCar);       
+void goAhead(){  
+  if( flag == 1){
+      analogWrite(VA, speedStart);
+      analogWrite(VB, speedStart);
+      delay(Time);
+      flag = 0;
+  }
+  Serial.println("speedCar = ");
+  Serial.println(speedCar);  
+  analogWrite(VA, speedCar);
+  analogWrite(VB, speedCar);       
   }
 
 void stopRobot(){
-     
-      analogWrite(VA, 0);
-      analogWrite(VB, 0);   
+  flag = 1;
+  Serial.print("speedCar = ");
+  Serial.println(speedCar);
+  analogWrite(VA, Stop);
+  analogWrite(VB, Stop);   
  }
 
-void goRight(){     
-      
-      analogWrite(VA, speedCar);
-      analogWrite(VB, 0);   
-      delay(500);
+void goRight(){  
+  if( flag == 1){
+      analogWrite(VA, speedStart);
+      analogWrite(VB, Stop);
+      delay(Time);
+      flag = 0;
   }
-
+  
+  Serial.println("speedCar = ");
+  Serial.println(speedCar);   
+   
+  analogWrite(VA, speedCar);
+  analogWrite(VB, Stop);  
+  }
+  
 void goLeft(){ 
-    
-      analogWrite(VA, 0);
-      analogWrite(VB, speedCar);  
-      delay(500); 
+  if( flag == 1){
+      analogWrite(VA, Stop);
+      analogWrite(VB, speedStart);
+      delay(Time);
+      flag = 0;
+  }
+  Serial.println("speedCar = ");
+  Serial.println(speedCar);
+  
+  analogWrite(VA, Stop);
+  analogWrite(VB, speedCar);  
+  
   }
 
 void loop() {
-     
       server.handleClient();
-    
       command = server.arg("State");
       if (command == "F") goAhead();
       else if (command == "L") goLeft();
@@ -95,9 +120,7 @@ void loop() {
       else if (command == "7") speedCar = 800;
       else if (command == "8") speedCar = 900;
       else if (command == "9") speedCar = 1000;
-      else stopRobot();
-
-      
+      else stopRobot();     
 }
 
 void HTTP_handleRoot(void) {
