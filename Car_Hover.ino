@@ -14,7 +14,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h> 
 #include <ESP8266WebServer.h>
-int flag = 1;
 
 
 String command;             
@@ -22,6 +21,9 @@ int speedCar =1;
 int speedStart = 900;
 int Stop = 0;
 int Time = 1000;
+
+int delay1 = 400;
+int delay2 = 25;
 
 const char* ssid = "CarHover";
 ESP8266WebServer server(80);
@@ -50,55 +52,42 @@ void setup() {
 
 
 void goAhead(){  
-  if( flag == 1){
-      analogWrite(VA, speedStart);
-      analogWrite(VB, speedStart);
-      delay(Time);
-      flag = 0;
-  }
-  Serial.println("speedCar = ");
-  Serial.println(speedCar);  
+  analogWrite(VA, 900);
+  analogWrite(VB, 900);
+  delay(delay1);
+  
   analogWrite(VA, speedCar);
-  analogWrite(VB, speedCar);       
-  }
+  analogWrite(VB, speedCar);   
+  delay(delay2);
+      
+}
 
 void stopRobot(){
-  flag = 1;
-  Serial.print("speedCar = ");
-  Serial.println(speedCar);
   analogWrite(VA, Stop);
-  analogWrite(VB, Stop);   
- }
+  analogWrite(VB, Stop);  
+}
 
 void goRight(){  
-  if( flag == 1){
-      analogWrite(VA, speedStart);
-      analogWrite(VB, Stop);
-      delay(Time);
-      flag = 0;
-  }
+  analogWrite(VA, 900);
+  analogWrite(VB, Stop);
+  delay(delay1);
   
-  Serial.println("speedCar = ");
-  Serial.println(speedCar);   
-   
   analogWrite(VA, speedCar);
   analogWrite(VB, Stop);  
-  }
+  delay(delay2);
+  
+}
   
 void goLeft(){ 
-  if( flag == 1){
-      analogWrite(VA, Stop);
-      analogWrite(VB, speedStart);
-      delay(Time);
-      flag = 0;
-  }
-  Serial.println("speedCar = ");
-  Serial.println(speedCar);
+  analogWrite(VA, Stop);
+  analogWrite(VB, 900);
+  delay(delay1);
   
   analogWrite(VA, Stop);
   analogWrite(VB, speedCar);  
+  delay(delay2);
   
-  }
+}
 
 void loop() {
       server.handleClient();
